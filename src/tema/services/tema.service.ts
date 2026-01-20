@@ -64,5 +64,4 @@ export class TemaService {
         return await this.temaRepository.delete(id);
 
     }
-
 }
