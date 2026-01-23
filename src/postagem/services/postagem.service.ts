@@ -1,14 +1,11 @@
 import { TemaService } from './../../tema/services/tema.service';
-import { Postagem } from './../entities/postagem.entity';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Postagem } from '../entities/postagem.entity';
+import { DeleteResult, ILike, Repository } from 'typeorm';
 
 @Injectable()
 export class PostagemService {
-  delete(id: number) {
-    throw new Error("Method not implemented.");
-  }
   constructor(
     @InjectRepository(Postagem)
     private postagemRepository: Repository<Postagem>,
@@ -35,8 +32,7 @@ export class PostagemService {
       },
     });
     if (!postagem)
-      throw new HttpException('Postagem não encontrada', HttpStatus.NOT_FOUND);
-
+      throw new HttpException('Postagem não encontrada!', HttpStatus.NOT_FOUND);
     return postagem;
   }
 
@@ -54,15 +50,17 @@ export class PostagemService {
 
   async create(postagem: Postagem): Promise<Postagem> {
     await this.temaService.findById(postagem.tema.id);
-
     return await this.postagemRepository.save(postagem);
   }
 
   async update(postagem: Postagem): Promise<Postagem> {
     await this.findById(postagem.id);
-
     await this.temaService.findById(postagem.tema.id);
-
     return await this.postagemRepository.save(postagem);
+  }
+
+  async delete(id: number): Promise<DeleteResult> {
+    await this.findById(id);
+    return await this.postagemRepository.delete(id);
   }
 }
